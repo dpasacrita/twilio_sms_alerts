@@ -2,6 +2,7 @@
 from twilio.rest import Client
 import time
 import os
+import sys
 
 # Globals
 alert_file = "last_alert.txt"
@@ -114,6 +115,8 @@ if __name__ == "__main__":
         logit("INFO: Beginning alerts now.")
         for number in contact_list:
             logit("INFO: Sending alert to %s" % number)
-            #send_sms(number, "Nagios reported a status change change with an Email Host. Investigate this immediately!")
+            send_sms(number, "Nagios reported a status change change with an Email Host. Investigate this immediately!")
     else:
-        print("Test came back false. Alert will NOT send.")
+        logit("INFO: Closing without sending anything.")
+        sys.exit()
+
