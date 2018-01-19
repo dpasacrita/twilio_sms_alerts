@@ -10,6 +10,9 @@ alert_file_path = "xxxxxxxxxxxxxx/last_alert.txt"
 sms_log_file = "sms.log"
 alert_threshold = 1800
 contact_list = ["xxxxxxxxx", "xxxxxxxxxxxxx", "xxxxxxxxxx", "xxxxxxxxxx"]
+host = ""
+service = ""
+# HOST SERVICE SERVICESTATE
 
 
 def send_sms(to, body):
@@ -102,11 +105,41 @@ def compare_times(runtime, alert_file):
         return False
 
 
+def parse_arguments():
+    """
+    This function will check that there are the correct number of arguments,
+    then exit the script if it's a SOFT alert.
+    Then it will update the globals with the host and service names.
+    :return:
+    """
+
+    global host
+    global service
+
+    # Check if there are not enough arguments
+    if len(sys.argv) != 4:
+        logit("ERROR: There are not enough script arguments!")
+        sys.exit()
+
+    # Exit the script right away if it's a SOFT state
+    if sys.argv[3] == "SOFT":
+        logit("INFO: Nagios detected a SOFT warning/critical state.")
+        logit("INFO: Exiting for now until a HARD state is detected.")
+        sys.exit()
+    else:
+        logit("INFO: Nagios detected a HARD warning/critical state.")
+        logit("INFO: Proceeding with text alerts.")
+
+    # Grab the hostname and service
+    # These are globals so the function can end after that
+    host = sys.argv[1]
+    service = sys.argv[2]
+
+
 if __name__ == "__main__":
 
     # Collect information on the issue
-    # The initial version of the script will not be doing this.
-    # I'll add this functionality soon however.
+    parse_arguments()
 
     # Get the time of this run
     runtime = time.time()

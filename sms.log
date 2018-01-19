@@ -1,0 +1,10 @@
+2018-01-19 15:57:21 -- ERROR: There are not enough script arguments!
+2018-01-19 15:57:44 -- ERROR: There are not enough script arguments!
+2018-01-19 15:57:51 -- INFO: Nagios detected a HARD warning/critical state.
+2018-01-19 15:57:51 -- INFO: Proceeding with rest of 
+2018-01-19 15:58:41 -- INFO: Nagios detected a SOFT warning/critical state.
+2018-01-19 15:58:41 -- INFO: Exiting for now until a HARD state is detected.
+2018-01-19 15:58:50 -- INFO: Nagios detected a SOFT warning/critical state.
+2018-01-19 15:58:50 -- INFO: Exiting for now until a HARD state is detected.
+2018-01-19 15:58:59 -- INFO: Nagios detected a HARD warning/critical state.
+2018-01-19 15:58:59 -- INFO: Proceeding with rest of 
