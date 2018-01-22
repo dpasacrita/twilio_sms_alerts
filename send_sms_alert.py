@@ -118,37 +118,46 @@ def parse_arguments():
     global service
     global state
     global host
+    global justhost
 
-    # If this is just a host, just send the alert.
-    if len(sys.argv) == 5:
-        logit("INFO: This seems to just be a host. We're just going to send the alert now in that case.")
-        justhost = True
-        host = sys.argv[1]
-        return
+    # Check if the host is down. If it is, send an alert with that as the subject.
+    if sys.argv[5] == 'DOWN':
+        logit("INFO: This host is reporting DOWN. A alert will be sent immediately if this is also a HARD alert")
+        if sys.argv[6] == 'HARD':
+            logit("INFO: HARD alert confirmed. Sending host down alert.")
+            justhost = True
+            host = sys.argv[1]
+            return
+        elif sys.argv[6] == 'SOFT':
+            logit("INFO: Still just a SOFT alert, do nothing.")
+            sys.exit()
+        else:
+            logit("ERROR: HOSTALERTTYPE contains bad data: %s" % sys.argv[6])
+            sys.exit()
 
     # Exit if state is OK
-    if sys.argv[7] == "OK":
-        logit("INFO: State is %s" % sys.argv[7])
+    if sys.argv[4] == "OK":
+        logit("INFO: State is %s" % sys.argv[4])
         logit("INFO: Exiting.")
         sys.exit()
 
-    logit("INFO: State is %s" % sys.argv[7])
+    logit("INFO: State is %s" % sys.argv[4])
     # Exit the script right away if it's a SOFT state
-    if sys.argv[6] == "SOFT":
-        logit("INFO: Type is %s" % sys.argv[6])
+    if sys.argv[3] == "SOFT":
+        logit("INFO: Type is %s" % sys.argv[3])
         logit("INFO: Nagios detected a SOFT warning/critical state.")
         logit("INFO: Exiting for now until a HARD state is detected.")
         sys.exit()
     else:
-        logit("INFO: Type is %s" % sys.argv[6])
+        logit("INFO: Type is %s" % sys.argv[3])
         logit("INFO: Nagios detected a HARD warning/critical state.")
         logit("INFO: Proceeding with text alerts.")
 
     # Grab the hostname and service
     # These are globals so the function can end after that
     host = sys.argv[1]
-    service = sys.argv[5]
-    state = sys.argv[7]
+    service = sys.argv[2]
+    state = sys.argv[4]
 
 
 if __name__ == "__main__":
