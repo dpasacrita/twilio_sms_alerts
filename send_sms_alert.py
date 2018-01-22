@@ -12,7 +12,8 @@ alert_threshold = 1800
 contact_list = ["xxxxxxxxx", "xxxxxxxxxxxxx", "xxxxxxxxxx", "xxxxxxxxxx"]
 host = ""
 service = ""
-# HOST SERVICE SERVICESTATE
+state =""
+justhost = False
 
 
 def send_sms(to, body):
@@ -115,31 +116,64 @@ def parse_arguments():
 
     global host
     global service
+    global state
+    global host
 
-    # Check if there are not enough arguments
-    if len(sys.argv) != 4:
-        logit("ERROR: There are not enough script arguments!")
+    # If this is just a host, just send the alert.
+    if len(sys.argv) == 5:
+        logit("INFO: This seems to just be a host. We're just going to send the alert now in that case.")
+        justhost = True
+        host = sys.argv[1]
+        return
+
+    # Exit if state is OK
+    if sys.argv[7] == "OK":
+        logit("INFO: State is %s" % sys.argv[7])
+        logit("INFO: Exiting.")
         sys.exit()
 
+    logit("INFO: State is %s" % sys.argv[7])
     # Exit the script right away if it's a SOFT state
-    if sys.argv[3] == "SOFT":
+    if sys.argv[6] == "SOFT":
+        logit("INFO: Type is %s" % sys.argv[6])
         logit("INFO: Nagios detected a SOFT warning/critical state.")
         logit("INFO: Exiting for now until a HARD state is detected.")
         sys.exit()
     else:
+        logit("INFO: Type is %s" % sys.argv[6])
         logit("INFO: Nagios detected a HARD warning/critical state.")
         logit("INFO: Proceeding with text alerts.")
 
     # Grab the hostname and service
     # These are globals so the function can end after that
     host = sys.argv[1]
-    service = sys.argv[2]
+    service = sys.argv[5]
+    state = sys.argv[7]
 
 
 if __name__ == "__main__":
 
+    # Debug statement, remove later
+    logit("INFO: %s" % sys.argv)
+
     # Collect information on the issue
     parse_arguments()
+
+    # If justhost == true, this is only a host and we need to run a different alert.
+    if justhost:
+
+        # Get the time of this run
+        runtime = time.time()
+
+        if compare_times(runtime, alert_file):
+            logit("INFO: Beginning alerts now.")
+            for number in contact_list:
+                logit("INFO: Sending alert to %s" % number)
+                send_sms(number, "HOST " + host + " is reporting DOWN, investigate immediately.")
+            sys.exit()
+        else:
+            logit("INFO: Closing without sending anything.")
+            sys.exit()
 
     # Get the time of this run
     runtime = time.time()
