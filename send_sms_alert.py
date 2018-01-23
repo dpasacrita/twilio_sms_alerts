@@ -12,7 +12,7 @@ alert_threshold = 1800
 contact_list = ["xxxxxxxxx", "xxxxxxxxxxxxx", "xxxxxxxxxx", "xxxxxxxxxx"]
 host = ""
 service = ""
-state =""
+state = ""
 justhost = False
 
 
@@ -134,6 +134,10 @@ def parse_arguments():
         else:
             logit("ERROR: HOSTALERTTYPE contains bad data: %s" % sys.argv[6])
             sys.exit()
+    # Likewise, if the host is coming back up, don't alert.
+    if sys.argv[4] == '$SERVICESTATE$':
+        logit("INFO: Host is just coming back up. No worries. Not sending alert.")
+        sys.exit()
 
     # Exit if state is OK
     if sys.argv[4] == "OK":
@@ -195,4 +199,3 @@ if __name__ == "__main__":
     else:
         logit("INFO: Closing without sending anything.")
         sys.exit()
-
